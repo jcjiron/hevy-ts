@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/jcjiron/hevy-ts/compare/v1.0.0...v1.0.1) (2025-08-23)
+
+
+### Bug Fixes
+
+* remove dotenv dependency reading api key env variable ([18b6133](https://github.com/jcjiron/hevy-ts/commit/18b6133c7180fa149cae2c3103e38df6a98f0cb0))
+
 # 1.0.0 (2025-07-24)
 
 
