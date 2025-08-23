@@ -4,4 +4,3 @@ export * from './domain/models/Workout';
 export * from './domain/models/routineFolders';
 export * from './domain/models/exerciseTemplates';
 export * from './domain/models/webhook';
-export { HttpClient } from './datasource/HttpClient.interface';

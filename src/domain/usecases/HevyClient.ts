@@ -1,24 +1,17 @@
-import { CreateWebhookRequest } from '../models/webhook';
+import { HttpClient } from '../../datasource/HttpClient.interface';
+import { AxiosHttpClient } from '../../plugins/axios.plugin';
 import {
     ExerciseTemplate,
     GetExerciseTemplatesResponse
 } from '../models/exerciseTemplates';
 import {
-    RoutineFolder,
     CreateRoutineFolderRequest,
     CreateRoutineFolderResponse,
-    GetRoutineFoldersResponse
+    GetRoutineFoldersResponse,
+    RoutineFolder
 } from '../models/routineFolders';
-import { HttpClient } from '../../datasource/HttpClient.interface';
-import * as dotenv from 'dotenv';
+import { CreateWebhookRequest } from '../models/webhook';
 
-dotenv.config();
-
-const API_KEY = process.env.API_KEY;
-
-if (!API_KEY) {
-    throw new Error('API_KEY is not set in the .env file');
-}
 
 export interface WorkoutSet {
     type: string;
@@ -47,13 +40,22 @@ export interface CreateWorkoutRequest {
 }
 
 export class HevyClient {
+
+    private httpClient: HttpClient;
+    private apiKey: string;
+
+    constructor(apiKey: string) {
+        this.httpClient = new AxiosHttpClient(apiKey);
+        this.apiKey = apiKey;
+    }
+
     // Webhook
     async getWebhookSubscription(): Promise<any | null> {
         try {
             const response = await this.httpClient.get(`/webhook-subscription`, {
                 headers: {
                     'accept': 'application/json',
-                    'api-key': API_KEY,
+                    'api-key': this.apiKey,
                 },
             });
             return response.data ?? response;
@@ -73,7 +75,7 @@ export class HevyClient {
             await this.httpClient.delete(`/webhook-subscription`, {
                 headers: {
                     'accept': '*/*',
-                    'api-key': API_KEY,
+                    'api-key': this.apiKey,
                 },
             });
         } catch (error: any) {
@@ -92,7 +94,7 @@ export class HevyClient {
                 {
                     headers: {
                         'accept': '*/*',
-                        'api-key': API_KEY,
+                        'api-key': this.apiKey,
                         'Content-Type': 'application/json',
                     },
                 }
@@ -110,7 +112,7 @@ export class HevyClient {
             const response = await this.httpClient.get(`/exercise_templates/${exerciseTemplateId}`, {
                 headers: {
                     'accept': 'application/json',
-                    'api-key': API_KEY,
+                    'api-key': this.apiKey,
                 },
             });
             return response.data ?? response;
@@ -128,7 +130,7 @@ export class HevyClient {
                 params: { page, pageSize },
                 headers: {
                     'accept': 'application/json',
-                    'api-key': API_KEY,
+                    'api-key': this.apiKey,
                 },
             });
             return response.data ?? response;
@@ -145,7 +147,7 @@ export class HevyClient {
             const response = await this.httpClient.get(`/routine_folders/${folderId}`, {
                 headers: {
                     'accept': 'application/json',
-                    'api-key': API_KEY,
+                    'api-key': this.apiKey,
                 },
             });
             return response.data ?? response;
@@ -165,7 +167,7 @@ export class HevyClient {
                 {
                     headers: {
                         'accept': 'application/json',
-                        'api-key': API_KEY,
+                        'api-key': this.apiKey,
                         'Content-Type': 'application/json',
                     },
                 }
@@ -185,7 +187,7 @@ export class HevyClient {
                 params: { page, pageSize },
                 headers: {
                     'accept': 'application/json',
-                    'api-key': API_KEY,
+                    'api-key': this.apiKey,
                 },
             });
             return response.data ?? response;
@@ -196,13 +198,6 @@ export class HevyClient {
             throw error;
         }
     }
-    private httpClient: HttpClient;
-    private baseUrl: string;
-
-    constructor(httpClient: HttpClient, baseUrl: string = 'https://api.hevyapp.com/v1') {
-        this.httpClient = httpClient;
-        this.baseUrl = baseUrl;
-    }
 
     async updateWorkout(workoutId: string, workout: CreateWorkoutRequest): Promise<any> {
         try {
@@ -212,7 +207,7 @@ export class HevyClient {
                 {
                     headers: {
                         'accept': 'application/json',
-                        'api-key': API_KEY,
+                        'api-key': this.apiKey,
                         'Content-Type': 'application/json',
                     },
                 }
@@ -231,7 +226,7 @@ export class HevyClient {
             const response = await this.httpClient.get(`/workouts/${workoutId}`, {
                 headers: {
                     'accept': 'application/json',
-                    'api-key': API_KEY,
+                    'api-key': this.apiKey,
                 },
             });
             return response;
@@ -249,7 +244,7 @@ export class HevyClient {
                 params: { page, pageSize, since },
                 headers: {
                     'accept': 'application/json',
-                    'api-key': API_KEY,
+                    'api-key': this.apiKey,
                 },
             });
             return response;
@@ -266,7 +261,7 @@ export class HevyClient {
             const response = await this.httpClient.get(`/workouts/count`, {
                 headers: {
                     'accept': 'application/json',
-                    'api-key': API_KEY,
+                    'api-key': this.apiKey,
                 },
             });
             return response.workout_count;
@@ -284,7 +279,7 @@ export class HevyClient {
                 params: { page, pageSize },
                 headers: {
                     'accept': 'application/json',
-                    'api-key': API_KEY,
+                    'api-key': this.apiKey,
                 },
             });
             return response;
@@ -304,7 +299,7 @@ export class HevyClient {
                 {
                     headers: {
                         'accept': 'application/json',
-                        'api-key': API_KEY,
+                        'api-key': this.apiKey,
                         'Content-Type': 'application/json',
                     },
                 }

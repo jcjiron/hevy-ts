@@ -12,7 +12,6 @@ const config: Config = {
     coverageProvider: "v8",
     preset: 'ts-jest',
     testEnvironment: "jest-environment-node",
-    setupFiles: ["dotenv/config"],
     moduleNameMapper: {
         "^@src/(.*)$": "<rootDir>/src/$1",
     },

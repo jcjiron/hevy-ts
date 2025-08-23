@@ -13,13 +13,11 @@ npm install hevy-ts
 ```typescript
 import dotenv from "dotenv";
 import { HevyClient } from "./domain/usecases/HevyClient";
-import { AxiosHttpClient } from "./datasource/AxiosHttpClient";
 
 dotenv.config(); // load your env variables
 
 const apiKey = process.env.API_KEY || "";
-const httpClient = new AxiosHttpClient(apiKey);
-const hevy = new HevyClient(httpClient);
+const hevy = new HevyClient(apiKey);
 
 (async () => {
   // List all workouts

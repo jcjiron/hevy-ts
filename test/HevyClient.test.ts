@@ -3,25 +3,18 @@ import { CreateWorkoutRequest } from '../src/domain/models/Workout';
 import { HttpClient } from '../src/datasource/HttpClient.interface';
 
 describe('HevyClient', () => {
-    let mockHttpClient: jest.Mocked<HttpClient>;
     let client: HevyClient;
 
     beforeEach(() => {
-        mockHttpClient = {
-            get: jest.fn(),
-            post: jest.fn(),
-            put: jest.fn(),
-            delete: jest.fn(),
-        };
-        client = new HevyClient(mockHttpClient);
+        client = new HevyClient("api key");
     });
 
     it('should get workouts', async () => {
         const mockResponse = { page: 1, page_count: 1, workouts: [] };
-        mockHttpClient.get.mockResolvedValueOnce(mockResponse);
+        const getSpy = jest.spyOn(client['httpClient'], 'get').mockResolvedValueOnce(mockResponse);
         const result = await client.getWorkouts();
         expect(result).toEqual(mockResponse);
-        expect(mockHttpClient.get).toHaveBeenCalledWith(
+        expect(getSpy).toHaveBeenCalledWith(
             '/workouts',
             expect.objectContaining({ params: { page: 1, pageSize: 5 }, headers: expect.any(Object) })
         );
@@ -29,7 +22,7 @@ describe('HevyClient', () => {
 
     it('should handle API error', async () => {
         const error = { isAxiosError: true, response: { status: 500, data: 'error' } };
-        mockHttpClient.get.mockRejectedValueOnce(error);
+        jest.spyOn(client['httpClient'], 'get').mockRejectedValueOnce(error);
         await expect(client.getWorkouts()).rejects.toThrow('API Error: 500 - "error"');
     });
 
@@ -43,10 +36,10 @@ describe('HevyClient', () => {
             exercises: [],
         };
         const mockResponse = { id: '123', ...workout };
-        mockHttpClient.post.mockResolvedValueOnce(mockResponse);
+        const postSpy = jest.spyOn(client['httpClient'], 'post').mockResolvedValueOnce(mockResponse);
         const result = await client.createWorkout(workout);
         expect(result).toEqual(mockResponse);
-        expect(mockHttpClient.post).toHaveBeenCalledWith(
+        expect(postSpy).toHaveBeenCalledWith(
             '/workouts',
             { workout },
             expect.objectContaining({ headers: expect.any(Object) })
@@ -55,10 +48,10 @@ describe('HevyClient', () => {
 
     it('should get workout by id', async () => {
         const mockResponse = { id: 'abc', title: 'Workout' };
-        mockHttpClient.get.mockResolvedValueOnce(mockResponse);
+        const getSpy = jest.spyOn(client['httpClient'], 'get').mockResolvedValueOnce(mockResponse);
         const result = await client.getWorkoutById('abc');
         expect(result).toEqual(mockResponse);
-        expect(mockHttpClient.get).toHaveBeenCalledWith(
+        expect(getSpy).toHaveBeenCalledWith(
             '/workouts/abc',
             expect.objectContaining({ headers: expect.any(Object) })
         );
@@ -66,10 +59,10 @@ describe('HevyClient', () => {
 
     it('should get workout events', async () => {
         const mockResponse = { events: [] };
-        mockHttpClient.get.mockResolvedValueOnce(mockResponse);
+        const getSpy = jest.spyOn(client['httpClient'], 'get').mockResolvedValueOnce(mockResponse);
         const result = await client.getWorkoutEvents(2, 10, '2025-01-01T00:00:00Z');
         expect(result).toEqual(mockResponse);
-        expect(mockHttpClient.get).toHaveBeenCalledWith(
+        expect(getSpy).toHaveBeenCalledWith(
             '/workouts/events',
             expect.objectContaining({ params: { page: 2, pageSize: 10, since: '2025-01-01T00:00:00Z' }, headers: expect.any(Object) })
         );
@@ -77,10 +70,10 @@ describe('HevyClient', () => {
 
     it('should get workout count', async () => {
         const mockResponse = { workout_count: 42 };
-        mockHttpClient.get.mockResolvedValueOnce(mockResponse);
+        const getSpy = jest.spyOn(client['httpClient'], 'get').mockResolvedValueOnce(mockResponse);
         const result = await client.getWorkoutCount();
         expect(result).toBe(42);
-        expect(mockHttpClient.get).toHaveBeenCalledWith(
+        expect(getSpy).toHaveBeenCalledWith(
             '/workouts/count',
             expect.objectContaining({ headers: expect.any(Object) })
         );
@@ -96,10 +89,10 @@ describe('HevyClient', () => {
             exercises: [],
         };
         const mockResponse = { id: 'abc', ...workout };
-        mockHttpClient.put.mockResolvedValueOnce(mockResponse);
+        const putSpy = jest.spyOn(client['httpClient'], 'put').mockResolvedValueOnce(mockResponse);
         const result = await client.updateWorkout('abc', workout);
         expect(result).toEqual(mockResponse);
-        expect(mockHttpClient.put).toHaveBeenCalledWith(
+        expect(putSpy).toHaveBeenCalledWith(
             '/workouts/abc',
             { workout },
             expect.objectContaining({ headers: expect.any(Object) })
@@ -109,10 +102,10 @@ describe('HevyClient', () => {
     // Routine Folders
     it('should get routine folder by id', async () => {
         const mockResponse = { id: 1, title: 'Folder' };
-        mockHttpClient.get.mockResolvedValueOnce(mockResponse);
+        const getSpy = jest.spyOn(client['httpClient'], 'get').mockResolvedValueOnce(mockResponse);
         const result = await client.getRoutineFolderById(1);
         expect(result).toEqual(mockResponse);
-        expect(mockHttpClient.get).toHaveBeenCalledWith(
+        expect(getSpy).toHaveBeenCalledWith(
             '/routine_folders/1',
             expect.objectContaining({ headers: expect.any(Object) })
         );
@@ -121,10 +114,10 @@ describe('HevyClient', () => {
     it('should create a routine folder', async () => {
         const folder = { title: 'New Folder' };
         const mockResponse = { routine_folder: { id: 2, title: 'New Folder' } };
-        mockHttpClient.post.mockResolvedValueOnce(mockResponse);
+        const postSpy = jest.spyOn(client['httpClient'], 'post').mockResolvedValueOnce(mockResponse);
         const result = await client.createRoutineFolder(folder);
         expect(result).toEqual(mockResponse);
-        expect(mockHttpClient.post).toHaveBeenCalledWith(
+        expect(postSpy).toHaveBeenCalledWith(
             '/routine_folders',
             { routine_folder: folder },
             expect.objectContaining({ headers: expect.any(Object) })
@@ -133,10 +126,10 @@ describe('HevyClient', () => {
 
     it('should get routine folders', async () => {
         const mockResponse = { page: 1, page_count: 1, routine_folders: [] };
-        mockHttpClient.get.mockResolvedValueOnce(mockResponse);
+        const getSpy = jest.spyOn(client['httpClient'], 'get').mockResolvedValueOnce(mockResponse);
         const result = await client.getRoutineFolders(1, 5);
         expect(result).toEqual(mockResponse);
-        expect(mockHttpClient.get).toHaveBeenCalledWith(
+        expect(getSpy).toHaveBeenCalledWith(
             '/routine_folders',
             expect.objectContaining({ params: { page: 1, pageSize: 5 }, headers: expect.any(Object) })
         );
@@ -145,10 +138,10 @@ describe('HevyClient', () => {
     // Exercise Templates
     it('should get exercise template by id', async () => {
         const mockResponse = { id: 'et1', title: 'Bench Press' };
-        mockHttpClient.get.mockResolvedValueOnce(mockResponse);
+        const getSpy = jest.spyOn(client['httpClient'], 'get').mockResolvedValueOnce(mockResponse);
         const result = await client.getExerciseTemplateById('et1');
         expect(result).toEqual(mockResponse);
-        expect(mockHttpClient.get).toHaveBeenCalledWith(
+        expect(getSpy).toHaveBeenCalledWith(
             '/exercise_templates/et1',
             expect.objectContaining({ headers: expect.any(Object) })
         );
@@ -156,10 +149,10 @@ describe('HevyClient', () => {
 
     it('should get exercise templates', async () => {
         const mockResponse = { page: 1, page_count: 1, exercise_templates: [] };
-        mockHttpClient.get.mockResolvedValueOnce(mockResponse);
+        const getSpy = jest.spyOn(client['httpClient'], 'get').mockResolvedValueOnce(mockResponse);
         const result = await client.getExerciseTemplates(1, 5);
         expect(result).toEqual(mockResponse);
-        expect(mockHttpClient.get).toHaveBeenCalledWith(
+        expect(getSpy).toHaveBeenCalledWith(
             '/exercise_templates',
             expect.objectContaining({ params: { page: 1, pageSize: 5 }, headers: expect.any(Object) })
         );
@@ -168,10 +161,10 @@ describe('HevyClient', () => {
     // Webhook
     it('should get webhook subscription', async () => {
         const mockResponse = { url: 'https://webhook.site' };
-        mockHttpClient.get.mockResolvedValueOnce(mockResponse);
+        const getSpy = jest.spyOn(client['httpClient'], 'get').mockResolvedValueOnce(mockResponse);
         const result = await client.getWebhookSubscription();
         expect(result).toEqual(mockResponse);
-        expect(mockHttpClient.get).toHaveBeenCalledWith(
+        expect(getSpy).toHaveBeenCalledWith(
             '/webhook-subscription',
             expect.objectContaining({ headers: expect.any(Object) })
         );
@@ -179,15 +172,15 @@ describe('HevyClient', () => {
 
     it('should return null if webhook subscription not found', async () => {
         const error = { isAxiosError: true, response: { status: 404, data: 'not found' } };
-        mockHttpClient.get.mockRejectedValueOnce(error);
+        jest.spyOn(client['httpClient'], 'get').mockRejectedValueOnce(error);
         const result = await client.getWebhookSubscription();
         expect(result).toBeNull();
     });
 
     it('should delete webhook subscription', async () => {
-        mockHttpClient.delete.mockResolvedValueOnce(undefined);
+        const deleteSpy = jest.spyOn(client['httpClient'], 'delete').mockResolvedValueOnce(undefined);
         await client.deleteWebhookSubscription();
-        expect(mockHttpClient.delete).toHaveBeenCalledWith(
+        expect(deleteSpy).toHaveBeenCalledWith(
             '/webhook-subscription',
             expect.objectContaining({ headers: expect.any(Object) })
         );
@@ -195,9 +188,9 @@ describe('HevyClient', () => {
 
     it('should create webhook subscription', async () => {
         const data = { authToken: 'token', url: 'https://webhook.site' };
-        mockHttpClient.post.mockResolvedValueOnce(undefined);
+        const postSpy = jest.spyOn(client['httpClient'], 'post').mockResolvedValueOnce(undefined);
         await client.createWebhookSubscription(data);
-        expect(mockHttpClient.post).toHaveBeenCalledWith(
+        expect(postSpy).toHaveBeenCalledWith(
             '/webhook-subscription',
             data,
             expect.objectContaining({ headers: expect.any(Object) })
