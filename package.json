@@ -19,6 +19,7 @@
     "test:watch": "npm run build && jest --watch",
     "test:coverage": "jest --coverage",
     "build": "rimraf ./dist && tsc",
+    "prepare": "npm run build",
     "start": "npm run build && node dist/src/app.js",
     "dev": "nodemon src/app.ts"
   },
