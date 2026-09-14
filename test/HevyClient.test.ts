@@ -135,6 +135,74 @@ describe('HevyClient', () => {
         );
     });
 
+    // Routines
+    it('should get routines', async () => {
+        const mockResponse = { page: 1, page_count: 1, routines: [] };
+        const getSpy = jest.spyOn(client['httpClient'], 'get').mockResolvedValueOnce(mockResponse);
+        const result = await client.getRoutines(1, 5);
+        expect(result).toEqual(mockResponse);
+        expect(getSpy).toHaveBeenCalledWith(
+            '/routines',
+            expect.objectContaining({ params: { page: 1, pageSize: 5 }, headers: expect.any(Object) })
+        );
+    });
+
+    it('should get routine by id and unwrap the routine field', async () => {
+        const routine = { id: 'r1', title: 'Leg Day', exercises: [] };
+        const getSpy = jest.spyOn(client['httpClient'], 'get').mockResolvedValueOnce({ routine });
+        const result = await client.getRoutineById('r1');
+        expect(result).toEqual(routine);
+        expect(getSpy).toHaveBeenCalledWith(
+            '/routines/r1',
+            expect.objectContaining({ headers: expect.any(Object) })
+        );
+    });
+
+    it('should create a routine', async () => {
+        const routine = {
+            title: 'Leg Day',
+            exercises: [
+                {
+                    exercise_template_id: 'et1',
+                    superset_id: 0,
+                    rest_seconds: 0,
+                    sets: [{ type: 'normal', reps: 10, weight_kg: 40 }],
+                },
+                {
+                    exercise_template_id: 'et2',
+                    superset_id: 0,
+                    rest_seconds: 90,
+                    sets: [{ type: 'normal', reps: 12, weight_kg: 20 }],
+                },
+            ],
+        };
+        const mockResponse = { id: 'r2', ...routine };
+        const postSpy = jest.spyOn(client['httpClient'], 'post').mockResolvedValueOnce(mockResponse);
+        const result = await client.createRoutine(routine);
+        expect(result).toEqual(mockResponse);
+        expect(postSpy).toHaveBeenCalledWith(
+            '/routines',
+            { routine },
+            expect.objectContaining({ headers: expect.any(Object) })
+        );
+    });
+
+    it('should update a routine', async () => {
+        const routine = {
+            title: 'Leg Day (reordered)',
+            exercises: [],
+        };
+        const mockResponse = { id: 'r1', ...routine };
+        const putSpy = jest.spyOn(client['httpClient'], 'put').mockResolvedValueOnce(mockResponse);
+        const result = await client.updateRoutine('r1', routine);
+        expect(result).toEqual(mockResponse);
+        expect(putSpy).toHaveBeenCalledWith(
+            '/routines/r1',
+            { routine },
+            expect.objectContaining({ headers: expect.any(Object) })
+        );
+    });
+
     // Exercise Templates
     it('should get exercise template by id', async () => {
         const mockResponse = { id: 'et1', title: 'Bench Press' };

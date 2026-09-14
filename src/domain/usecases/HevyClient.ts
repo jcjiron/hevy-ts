@@ -10,6 +10,12 @@ import {
     GetRoutineFoldersResponse,
     RoutineFolder
 } from '../models/routineFolders';
+import {
+    CreateRoutineRequest,
+    GetRoutinesResponse,
+    Routine,
+    UpdateRoutineRequest
+} from '../models/routines';
 import { CreateWebhookRequest } from '../models/webhook';
 
 
@@ -190,6 +196,87 @@ export class HevyClient {
                     'api-key': this.apiKey,
                 },
             });
+            return response.data ?? response;
+        } catch (error: any) {
+            if (error.isAxiosError && error.response) {
+                throw new Error(`API Error: ${error.response.status} - ${JSON.stringify(error.response.data)}`);
+            }
+            throw error;
+        }
+    }
+
+    // Routines
+    async getRoutines(page = 1, pageSize = 5): Promise<GetRoutinesResponse> {
+        try {
+            const response = await this.httpClient.get(`/routines`, {
+                params: { page, pageSize },
+                headers: {
+                    'accept': 'application/json',
+                    'api-key': this.apiKey,
+                },
+            });
+            return response.data ?? response;
+        } catch (error: any) {
+            if (error.isAxiosError && error.response) {
+                throw new Error(`API Error: ${error.response.status} - ${JSON.stringify(error.response.data)}`);
+            }
+            throw error;
+        }
+    }
+
+    async getRoutineById(routineId: string): Promise<Routine> {
+        try {
+            const response = await this.httpClient.get(`/routines/${routineId}`, {
+                headers: {
+                    'accept': 'application/json',
+                    'api-key': this.apiKey,
+                },
+            });
+            const data = response.data ?? response;
+            return data.routine ?? data;
+        } catch (error: any) {
+            if (error.isAxiosError && error.response) {
+                throw new Error(`API Error: ${error.response.status} - ${JSON.stringify(error.response.data)}`);
+            }
+            throw error;
+        }
+    }
+
+    async createRoutine(routine: CreateRoutineRequest): Promise<Routine> {
+        try {
+            const response = await this.httpClient.post(
+                `/routines`,
+                { routine },
+                {
+                    headers: {
+                        'accept': 'application/json',
+                        'api-key': this.apiKey,
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+            return response.data ?? response;
+        } catch (error: any) {
+            if (error.isAxiosError && error.response) {
+                throw new Error(`API Error: ${error.response.status} - ${JSON.stringify(error.response.data)}`);
+            }
+            throw error;
+        }
+    }
+
+    async updateRoutine(routineId: string, routine: UpdateRoutineRequest): Promise<Routine> {
+        try {
+            const response = await this.httpClient.put(
+                `/routines/${routineId}`,
+                { routine },
+                {
+                    headers: {
+                        'accept': 'application/json',
+                        'api-key': this.apiKey,
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
             return response.data ?? response;
         } catch (error: any) {
             if (error.isAxiosError && error.response) {
