@@ -14,10 +14,14 @@ export interface RoutineSet {
     type: string;
     weight_kg: number | null;
     reps: number | null;
-    rep_range: RoutineSetRepRange | null;
+    // Observed absent entirely (not even null) on real GET /v1/routines
+    // responses - marked optional rather than assumed present, unlike
+    // superset_id which was assumed-present and wrong (see the note on
+    // RoutineExercise.superset_id). rep_range/rpe do appear on workout sets.
+    rep_range?: RoutineSetRepRange | null;
     distance_meters: number | null;
     duration_seconds: number | null;
-    rpe: number | null;
+    rpe?: number | null;
     custom_metric: number | null;
 }
 
