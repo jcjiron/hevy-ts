@@ -1,0 +1,42 @@
+name: Manual NPM Publish
+
+# Recovery tool: publishes whatever git ref is given directly to npm,
+# bypassing semantic-release. Use this when a release's git tag/commit was
+# already created but the actual `npm publish` step failed (e.g. an
+# npm token/2FA issue), so semantic-release won't retry a version it
+# already thinks is released.
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Git ref (tag/branch/sha) to publish"
+        required: true
+        default: "main"
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      API_KEY: ${{ secrets.API_KEY }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.ref }}
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: "https://registry.npmjs.org/"
+      - name: Install dependencies
+        run: npm install
+      - name: Run tests
+        run: npm test
+      - name: Build the package
+        run: npm run build
+      - name: Publish to npm
+        run: npm publish
