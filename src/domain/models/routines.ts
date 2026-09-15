@@ -27,9 +27,19 @@ export interface RoutineExercise {
     rest_seconds: number | null;
     notes: string;
     exercise_template_id: string;
-    // Exercises sharing the same non-null supersets_id are performed back
+    // Exercises sharing the same non-null superset_id are performed back
     // to back as a superset; null means the exercise stands on its own.
-    supersets_id: number | null;
+    //
+    // HevyClient.getRoutines/getRoutineById normalize this field at
+    // runtime (see normalizeRoutine in HevyClient.ts): live API responses
+    // have been observed to use "superset_id", not "supersets_id" as an
+    // earlier version of this type assumed from third-party API docs that
+    // turned out to be wrong. That assumption silently dropped every
+    // superset grouping on read for any consumer that trusted the type
+    // without checking against real data. The normalization step also
+    // accepts "supersets_id" defensively in case some response ever does
+    // use it, but "superset_id" is the one that's actually been seen.
+    superset_id: number | null;
     sets: RoutineSet[];
 }
 

@@ -158,6 +158,39 @@ describe('HevyClient', () => {
         );
     });
 
+    it('normalizes superset_id on getRoutineById regardless of which raw key the API used, including a superset_id of 0', async () => {
+        // Real API responses have been observed to use "superset_id";
+        // this also accepts the "supersets_id" spelling defensively, and
+        // must not treat a superset_id of 0 as absent.
+        const rawRoutine = {
+            id: 'r1',
+            title: 'Push Day',
+            exercises: [
+                { index: 0, exercise_template_id: 'et-bench', superset_id: 0, sets: [] },
+                { index: 1, exercise_template_id: 'et-fly', supersets_id: 0, sets: [] },
+                { index: 2, exercise_template_id: 'et-tricep', superset_id: null, sets: [] },
+            ],
+        };
+        jest.spyOn(client['httpClient'], 'get').mockResolvedValueOnce({ routine: rawRoutine });
+        const result = await client.getRoutineById('r1');
+        expect(result.exercises[0].superset_id).toBe(0);
+        expect(result.exercises[1].superset_id).toBe(0);
+        expect(result.exercises[2].superset_id).toBeNull();
+    });
+
+    it('normalizes superset_id on getRoutines for every routine in the page', async () => {
+        const mockResponse = {
+            page: 1,
+            page_count: 1,
+            routines: [
+                { id: 'r1', title: 'A', exercises: [{ index: 0, exercise_template_id: 'et1', supersets_id: 2, sets: [] }] },
+            ],
+        };
+        jest.spyOn(client['httpClient'], 'get').mockResolvedValueOnce(mockResponse);
+        const result = await client.getRoutines();
+        expect(result.routines[0].exercises[0].superset_id).toBe(2);
+    });
+
     it('should create a routine', async () => {
         const routine = {
             title: 'Leg Day',

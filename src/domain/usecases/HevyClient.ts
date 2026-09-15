@@ -14,9 +14,32 @@ import {
     CreateRoutineRequest,
     GetRoutinesResponse,
     Routine,
+    RoutineExercise,
     UpdateRoutineRequest
 } from '../models/routines';
 import { CreateWebhookRequest } from '../models/webhook';
+
+// The API layer here is a thin passthrough with no runtime schema
+// validation - `Promise<Routine>` is a compile-time claim only, not
+// something enforced against what the server actually sends back. This
+// normalizes the one field that's been observed to arrive under a
+// different name than assumed (see the comment on RoutineExercise.superset_id
+// in models/routines.ts), so a wrong assumption here doesn't silently
+// drop data for every consumer.
+function normalizeRoutineExercise(raw: any): RoutineExercise {
+    return {
+        ...raw,
+        superset_id: raw.superset_id ?? raw.supersets_id ?? null,
+    };
+}
+
+function normalizeRoutine(raw: any): Routine {
+    if (!raw) return raw;
+    return {
+        ...raw,
+        exercises: Array.isArray(raw.exercises) ? raw.exercises.map(normalizeRoutineExercise) : raw.exercises,
+    };
+}
 
 
 export interface WorkoutSet {
@@ -215,7 +238,8 @@ export class HevyClient {
                     'api-key': this.apiKey,
                 },
             });
-            return response.data ?? response;
+            const data = response.data ?? response;
+            return { ...data, routines: (data.routines ?? []).map(normalizeRoutine) };
         } catch (error: any) {
             if (error.isAxiosError && error.response) {
                 throw new Error(`API Error: ${error.response.status} - ${JSON.stringify(error.response.data)}`);
@@ -233,7 +257,7 @@ export class HevyClient {
                 },
             });
             const data = response.data ?? response;
-            return data.routine ?? data;
+            return normalizeRoutine(data.routine ?? data);
         } catch (error: any) {
             if (error.isAxiosError && error.response) {
                 throw new Error(`API Error: ${error.response.status} - ${JSON.stringify(error.response.data)}`);
@@ -255,7 +279,8 @@ export class HevyClient {
                     },
                 }
             );
-            return response.data ?? response;
+            const data = response.data ?? response;
+            return normalizeRoutine(data.routine ?? data);
         } catch (error: any) {
             if (error.isAxiosError && error.response) {
                 throw new Error(`API Error: ${error.response.status} - ${JSON.stringify(error.response.data)}`);
@@ -277,7 +302,8 @@ export class HevyClient {
                     },
                 }
             );
-            return response.data ?? response;
+            const data = response.data ?? response;
+            return normalizeRoutine(data.routine ?? data);
         } catch (error: any) {
             if (error.isAxiosError && error.response) {
                 throw new Error(`API Error: ${error.response.status} - ${JSON.stringify(error.response.data)}`);
