@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/jcjiron/hevy-ts/compare/v1.1.0...v1.1.1) (2026-09-15)
+
+
+### Bug Fixes
+
+* add manual npm-publish recovery workflow for stuck releases ([6ca5f95](https://github.com/jcjiron/hevy-ts/commit/6ca5f9502453f23f8d1ca00082bf13e81b9cb8cd))
+
 # [1.1.0](https://github.com/jcjiron/hevy-ts/compare/v1.0.1...v1.1.0) (2026-09-15)
 
 
