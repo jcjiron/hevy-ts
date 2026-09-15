@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/jcjiron/hevy-ts/compare/v1.1.1...v1.1.2) (2026-09-15)
+
+
+### Bug Fixes
+
+* correct routine superset_id read-side field name and normalize it ([a3509c4](https://github.com/jcjiron/hevy-ts/commit/a3509c49d5029b97394d01221cc35545029736ee))
+
 ## [1.1.1](https://github.com/jcjiron/hevy-ts/compare/v1.1.0...v1.1.1) (2026-09-15)
 
 
