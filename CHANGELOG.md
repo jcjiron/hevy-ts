@@ -1,3 +1,10 @@
+## [1.1.3](https://github.com/jcjiron/hevy-ts/compare/v1.1.2...v1.1.3) (2026-09-15)
+
+
+### Bug Fixes
+
+* mark RoutineSet.rep_range/rpe as optional ([81d6074](https://github.com/jcjiron/hevy-ts/commit/81d607419ccf178d0e52056275281af72a80481b))
+
 ## [1.1.2](https://github.com/jcjiron/hevy-ts/compare/v1.1.1...v1.1.2) (2026-09-15)
 
 
