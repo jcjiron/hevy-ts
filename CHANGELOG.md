@@ -1,3 +1,10 @@
+## [1.1.4](https://github.com/jcjiron/hevy-ts/compare/v1.1.3...v1.1.4) (2026-09-15)
+
+
+### Bug Fixes
+
+* remove rep_range/rpe from RoutineSetRequest (write side) ([60b5934](https://github.com/jcjiron/hevy-ts/commit/60b5934e73fed84319b41dff1b9ca7e26a49f3d5))
+
 ## [1.1.3](https://github.com/jcjiron/hevy-ts/compare/v1.1.2...v1.1.3) (2026-09-15)
 
 
