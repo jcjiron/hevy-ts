@@ -70,11 +70,13 @@ export interface RoutineSetRequest {
     type: string;
     weight_kg?: number | null;
     reps?: number | null;
-    rep_range?: RoutineSetRepRange | null;
     distance_meters?: number | null;
     duration_seconds?: number | null;
-    rpe?: number | null;
     custom_metric?: number | null;
+    // No rep_range/rpe here: POST/PUT /v1/routines reject unrecognized
+    // keys outright (400 "Unrecognized key(s) in object: 'rpe'"), and
+    // those two are workout-set fields, not routine-set fields - see the
+    // matching note on RoutineSet above.
 }
 
 export interface RoutineExerciseRequest {
