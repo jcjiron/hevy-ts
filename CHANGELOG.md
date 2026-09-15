@@ -1,3 +1,15 @@
+# [1.1.0](https://github.com/jcjiron/hevy-ts/compare/v1.0.1...v1.1.0) (2026-09-15)
+
+
+### Bug Fixes
+
+* add prepare script so npm install works from a git dependency ([eed63e5](https://github.com/jcjiron/hevy-ts/commit/eed63e57ba3f2de53dade14c80f6073e550d4e60))
+
+
+### Features
+
+* add Routines API support (getRoutines, getRoutineById, createRoutine, updateRoutine) ([037221b](https://github.com/jcjiron/hevy-ts/commit/037221b0e41b27483177dd63e3364c46fd37dd4a))
+
 ## [1.0.1](https://github.com/jcjiron/hevy-ts/compare/v1.0.0...v1.0.1) (2025-08-23)
 
 
